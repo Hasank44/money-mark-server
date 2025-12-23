@@ -1,0 +1,53 @@
+import { Router } from "express";
+import isAuthenticated from "../middlewares/isAuthenticated.js";
+import roleMiddleware from "../middlewares/roleMiddleware.js";
+import { getAllPrices, priceUpdateByAdmin, setPriceByAdmin } from "../controllers/priceController.js";
+import { contactUpdateByAdmin, getAllContacts, setContactByAdmin } from "../controllers/contactController.js";
+import { createSlider, deleteSlider, updateSlider } from "../controllers/sliderController.js";
+import { singleFileUpload } from "../middlewares/uploadCloudinary.js";
+import { adminLogin, adminLogout, getMeByAdmin, userGetAllByAdmin, userGetOneByAdmin, userPasswordChangeByAdmin, userUpdateByAdmin } from "../controllers/adminController.js";
+import { approveGmailByAdmin, getAllGmailSellsByAdmin } from "../controllers/gmailController.js";
+import { approveFacebookByAdmin, getALLFacebookSellHistory } from "../controllers/facebookController.js";
+import { approveInstagramByAdmin, getAllInstagramSellHistory } from "../controllers/instagramController.js";
+import { createCodeByAdmin, getAllHistoryByAmin } from "../controllers/giftCodeController.js";
+
+const router = Router();
+// users
+router.get('/all/users', isAuthenticated, roleMiddleware('admin'), userGetAllByAdmin);
+router.get('/user/:id', isAuthenticated, roleMiddleware('admin'), userGetOneByAdmin);
+router.post('/user/update/:id', isAuthenticated, roleMiddleware('admin'), userUpdateByAdmin);
+router.post('/change/password/:id', isAuthenticated, roleMiddleware('admin'), userPasswordChangeByAdmin);
+
+// admins
+router.post('/login', adminLogin);
+router.post('/logout', isAuthenticated, roleMiddleware('admin'), adminLogout);
+router.get('/me', isAuthenticated, roleMiddleware('admin'), getMeByAdmin);
+
+// price
+router.get('/prices', isAuthenticated, roleMiddleware('admin'), getAllPrices);
+router.post('/set/price', isAuthenticated, roleMiddleware('admin'), setPriceByAdmin);
+router.put('/update/price/:id', isAuthenticated, roleMiddleware('admin'), priceUpdateByAdmin);
+
+// contacts
+router.get('/contacts', isAuthenticated, roleMiddleware('admin'), getAllContacts);
+router.post('/set/contact', isAuthenticated, roleMiddleware('admin'), setContactByAdmin);
+router.put('/update/contact/:id', isAuthenticated, roleMiddleware('admin'), contactUpdateByAdmin);
+
+// sliders
+router.post('/set/slider', isAuthenticated, roleMiddleware('admin'), singleFileUpload('image','money-mark'), createSlider);
+router.post('/update/slider/:id', isAuthenticated, roleMiddleware('admin'), singleFileUpload('image', 'money-mark'), updateSlider);
+router.post('/delete/slider/:id', isAuthenticated, roleMiddleware('admin'), deleteSlider);
+
+// sells
+router.get('/all/gmail/history', isAuthenticated, roleMiddleware('admin'), getAllGmailSellsByAdmin);
+router.post('/gmail/success/:id', isAuthenticated, roleMiddleware('admin'), approveGmailByAdmin);
+router.get('/all/facebook/history', isAuthenticated, roleMiddleware('admin'), getALLFacebookSellHistory);
+router.post('/facebook/success/:id', isAuthenticated, roleMiddleware('admin'), approveFacebookByAdmin);
+router.get('/all/instagram/history', isAuthenticated, roleMiddleware('admin'), getAllInstagramSellHistory);
+router.post('/instagram/success/:id', isAuthenticated, roleMiddleware('admin'), approveInstagramByAdmin);
+
+// giftCodes
+router.get('/all/giftCode/history', isAuthenticated, roleMiddleware('admin'), getAllHistoryByAmin);
+router.post('/add/giftCode', isAuthenticated, roleMiddleware('admin'), createCodeByAdmin);
+
+export default router;
