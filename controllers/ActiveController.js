@@ -97,7 +97,7 @@ export const userAccountActive = async (req, res) => {
         message: "Transaction Already Submitted",
       });
     }
-    if (user.accountStatus !== "Inactive") {
+    if (user.status !== "Inactive") {
       return res.status(400).json({
         message: "Your account is already activated",
       });

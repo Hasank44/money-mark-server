@@ -3,13 +3,14 @@ import isAuthenticated from "../middlewares/isAuthenticated.js";
 import roleMiddleware from "../middlewares/roleMiddleware.js";
 import { getAllPrices, priceUpdateByAdmin, setPriceByAdmin } from "../controllers/priceController.js";
 import { contactUpdateByAdmin, getAllContacts, setContactByAdmin } from "../controllers/contactController.js";
-import { createSlider, deleteSlider, updateSlider } from "../controllers/sliderController.js";
+import { createSlider, deleteSlider, getSlider, updateSlider } from "../controllers/sliderController.js";
 import { singleFileUpload } from "../middlewares/uploadCloudinary.js";
 import { adminLogin, adminLogout, getMeByAdmin, userGetAllByAdmin, userGetOneByAdmin, userPasswordChangeByAdmin, userUpdateByAdmin } from "../controllers/adminController.js";
 import { approveGmailByAdmin, getAllGmailSellsByAdmin } from "../controllers/gmailController.js";
 import { approveFacebookByAdmin, getALLFacebookSellHistory } from "../controllers/facebookController.js";
 import { approveInstagramByAdmin, getAllInstagramSellHistory } from "../controllers/instagramController.js";
 import { createCodeByAdmin, getAllHistoryByAmin } from "../controllers/giftCodeController.js";
+import { approveAccountActiveByAdmin, getAllActiveByAdmin } from "../controllers/ActiveController.js";
 
 const router = Router();
 // users
@@ -17,6 +18,7 @@ router.get('/all/users', isAuthenticated, roleMiddleware('admin'), userGetAllByA
 router.get('/user/:id', isAuthenticated, roleMiddleware('admin'), userGetOneByAdmin);
 router.post('/user/update/:id', isAuthenticated, roleMiddleware('admin'), userUpdateByAdmin);
 router.post('/change/password/:id', isAuthenticated, roleMiddleware('admin'), userPasswordChangeByAdmin);
+router.post('/user/account/active/:id', isAuthenticated, roleMiddleware('admin'), approveAccountActiveByAdmin);
 
 // admins
 router.post('/login', adminLogin);
@@ -34,9 +36,10 @@ router.post('/set/contact', isAuthenticated, roleMiddleware('admin'), setContact
 router.put('/update/contact/:id', isAuthenticated, roleMiddleware('admin'), contactUpdateByAdmin);
 
 // sliders
+router.get('/sliders', isAuthenticated, roleMiddleware('admin'), getSlider);
 router.post('/set/slider', isAuthenticated, roleMiddleware('admin'), singleFileUpload('image','money-mark'), createSlider);
 router.post('/update/slider/:id', isAuthenticated, roleMiddleware('admin'), singleFileUpload('image', 'money-mark'), updateSlider);
-router.post('/delete/slider/:id', isAuthenticated, roleMiddleware('admin'), deleteSlider);
+router.delete('/delete/slider/:id', isAuthenticated, roleMiddleware('admin'), deleteSlider);
 
 // sells
 router.get('/all/gmail/history', isAuthenticated, roleMiddleware('admin'), getAllGmailSellsByAdmin);
@@ -49,5 +52,9 @@ router.post('/instagram/success/:id', isAuthenticated, roleMiddleware('admin'), 
 // giftCodes
 router.get('/all/giftCode/history', isAuthenticated, roleMiddleware('admin'), getAllHistoryByAmin);
 router.post('/add/giftCode', isAuthenticated, roleMiddleware('admin'), createCodeByAdmin);
+
+// active
+router.get('/active/requests', isAuthenticated, roleMiddleware('admin'), getAllActiveByAdmin);
+router.post('/active/success/:id', isAuthenticated, roleMiddleware('admin'), approveAccountActiveByAdmin)
 
 export default router;

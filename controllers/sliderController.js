@@ -2,6 +2,25 @@ import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary.js";
 import Slider from "../models/Slider.js";
 
+export const getSlider = async (req, res) => {
+    try {
+        const sliders = await Slider.find({}).sort({ createdAt: -1 });
+        if (sliders.length === 0) {
+            return res.status(404).json({
+                message: 'Slider not found'
+            });
+        };
+        return res.status(200).json({
+            message: 'Slider Retrieved Success',
+            result: sliders
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Server Error Occurred'
+        });
+    };
+};
+
 export const createSlider = async (req, res) => {
     try {
         const { title, link } = req.body;

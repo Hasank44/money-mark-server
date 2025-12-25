@@ -6,6 +6,7 @@ import {
 } from '../controllers/userController.js';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
 import { getAllReferredUsers } from '../controllers/teamController.js';
+import { userAccountActive } from '../controllers/ActiveController.js';
 
 const router = Router();
 router.get('/me', isAuthenticated, getUser);
@@ -20,5 +21,6 @@ router.post('/verify/otp/:email', userOtpVerify);
 router.post('/set/new/password/:email', userSetNewPassword);
 router.post('/change/password', isAuthenticated, userPasswordChange);
 router.put('/update', isAuthenticated, userProfileUpdate);
+router.post('/account/active', isAuthenticated, userAccountActive);
 
 export default router;
