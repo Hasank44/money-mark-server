@@ -50,18 +50,31 @@ export const singleFileUpload = (fieldName, folder = "default") => {
   ];
 };
 
-export const multiFilesUpload = (fieldName, maxCount = 5, folder = "default") => {
+export const multiFilesUpload = (
+  fieldName,
+  maxCount = 5,
+  folder = "default"
+) => {
   return [
     upload.array(fieldName, maxCount),
     async (req, res, next) => {
-      if (!req.files || req.files.length === 0) return next();
+      if (!req.files?.length) return next();
       try {
         const uploadedFiles = [];
-        for (let file of req.files) {
+        for (const file of req.files) {
           const result = await uploadToCloudinary(file.buffer, folder);
-          uploadedFiles.push({ ...file, cloudinary: result });
-        };
-        req.files = uploadedFiles;
+          uploadedFiles.push({
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size,
+            cloudinary: {
+              url: result.secure_url,
+              public_id: result.public_id,
+            },
+          });
+        }
+        req.uploadedFiles = uploadedFiles;
         next();
       } catch (err) {
         next(err);
@@ -69,3 +82,39 @@ export const multiFilesUpload = (fieldName, maxCount = 5, folder = "default") =>
     },
   ];
 };
+
+export const taskScreenshotUpload = [
+  upload.fields([
+    { name: "firstScreenshot", maxCount: 1 },
+    { name: "secondScreenshot", maxCount: 1 },
+  ]),
+
+  async (req, res, next) => {
+    try {
+      if (!req.files) return next();
+      const files = [];
+
+      for (const key of ["firstScreenshot", "secondScreenshot"]) {
+        if (req.files[key]) {
+          const file = req.files[key][0];
+          const result = await uploadToCloudinary(
+            file.buffer,
+            "task-screenshots"
+          );
+
+          files.push({
+            field: key,
+            cloudinary: {
+              url: result.secure_url,
+              public_id: result.public_id,
+            },
+          });
+        }
+      }
+      req.uploadedFiles = files;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  },
+];

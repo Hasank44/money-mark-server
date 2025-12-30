@@ -176,7 +176,7 @@ const userSchema = new Schema(
         jobs: [
             {
                 type: String,
-                ref: "Deposit",
+                ref: "TaskJob",
             },
         ],
         deposits: [

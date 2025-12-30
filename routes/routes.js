@@ -6,8 +6,9 @@ import instagramRoute from './instagramRoute.js';
 import allHistoryRoute from './historyRoute.js';
 import giftCodeRoute from './giftCodeRoute.js';
 import withdrawRoute from './withdrawRoute.js';
-import depositRoute from './depositRoute.js'
-import paymentRoute from './paymentRoute.js'
+import depositRoute from './depositRoute.js';
+import paymentRoute from './paymentRoute.js';
+import tasksRoute from './taskJobRoute.js';
 
 const routes = [
     { path: '/api/v2/admin', handler: adminRoute },
@@ -20,6 +21,7 @@ const routes = [
     { path: '/api/v1/user', handler: withdrawRoute },
     { path: '/api/v1/user', handler: depositRoute },
     { path: '/api/v3/payment', handler: paymentRoute },
+    { path: '/api/v1/user', handler: tasksRoute },
 ];
 
 

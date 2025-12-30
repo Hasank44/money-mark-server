@@ -11,6 +11,7 @@ import { approveFacebookByAdmin, getALLFacebookSellHistory } from "../controller
 import { approveInstagramByAdmin, getAllInstagramSellHistory } from "../controllers/instagramController.js";
 import { createCodeByAdmin, getAllHistoryByAmin } from "../controllers/giftCodeController.js";
 import { approveAccountActiveByAdmin, getAllActiveByAdmin } from "../controllers/ActiveController.js";
+import { approveTaskByAdmin, deleteTaskByAdmin, getAllTaskHistoryByAdmin, setNewTaskByAdmin, taskUpdateByAdmin, userTaskHistoryByAdmin } from "../controllers/taskAdminController.js";
 
 const router = Router();
 // users
@@ -55,6 +56,13 @@ router.post('/add/giftCode', isAuthenticated, roleMiddleware('admin'), createCod
 
 // active
 router.get('/active/requests', isAuthenticated, roleMiddleware('admin'), getAllActiveByAdmin);
-router.post('/active/success/:id', isAuthenticated, roleMiddleware('admin'), approveAccountActiveByAdmin)
+router.post('/active/success/:id', isAuthenticated, roleMiddleware('admin'), approveAccountActiveByAdmin);
 
+// task-job
+router.get('/task-jobs', isAuthenticated, roleMiddleware('admin'), getAllTaskHistoryByAdmin);
+router.post('/add/task', isAuthenticated, roleMiddleware('admin'), setNewTaskByAdmin);
+router.post('/update/task/:id', isAuthenticated, roleMiddleware('admin'), taskUpdateByAdmin);
+router.delete('/delete/task/:id', isAuthenticated, roleMiddleware('admin'), deleteTaskByAdmin);
+router.get('/all/tasks/history', isAuthenticated, roleMiddleware('admin'), userTaskHistoryByAdmin);
+router.post('/task/request/success/:id', isAuthenticated, roleMiddleware('admin'), approveTaskByAdmin);
 export default router;

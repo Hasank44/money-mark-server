@@ -7,6 +7,7 @@ import {
 import isAuthenticated from '../middlewares/isAuthenticated.js';
 import { getAllReferredUsers } from '../controllers/teamController.js';
 import { userAccountActive } from '../controllers/ActiveController.js';
+import { userBalanceTransfer } from '../controllers/transferController.js';
 
 const router = Router();
 router.get('/me', isAuthenticated, getUser);
@@ -22,5 +23,6 @@ router.post('/set/new/password/:email', userSetNewPassword);
 router.post('/change/password', isAuthenticated, userPasswordChange);
 router.put('/update', isAuthenticated, userProfileUpdate);
 router.post('/account/active', isAuthenticated, userAccountActive);
+router.post('/balance/transfer', isAuthenticated, userBalanceTransfer);
 
 export default router;

@@ -15,13 +15,22 @@ const validate = (user) => {
         error.message = 'Please select method';
     }  else if (typeof user.method !== "string") {
         error.message = 'Enter valid method'
-    }
+    };
+
+    //walletName
+    if (!user.walletName) {
+        error.message = 'Please select wallet';
+    }  else if (typeof user.walletName !== "string") {
+        error.message = 'Enter valid wallet'
+    };
     //paymentAddress
     if (!user.paymentAddress) {
         error.message = 'Please enter your payment number';
-    } else if (user.paymentAddress.length !== 11) {
+    } else if (user.paymentAddress.length < 8) {
         error.message = 'Please provide a valid number';
-    }  else if (typeof user.paymentAddress !== "string") {
+    } else if (user.paymentAddress.length > 15) {
+        error.message = 'Please provide a valid number';
+    } else if (typeof user.paymentAddress !== "string") {
         error.message = 'Enter valid number'
     }
 

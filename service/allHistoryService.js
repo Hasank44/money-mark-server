@@ -3,6 +3,7 @@ import Price from "../models/Price.js";
 import Slider from "../models/Slider.js";
 import Deposit from '../models/Deposit.js';
 import Withdraw from '../models/Withdraw.js';
+import Transfer from '../models/Transfer.js'
 import Gmail from '../models/Gmail.js';
 import Facebook from '../models/Facebook.js';
 import Instagram from '../models/Instagram.js';
@@ -26,14 +27,16 @@ export const fetchUserHistory = async userId => {
 };
 
 export const paymentHistory = async (userId) => {
-  const [deposits, withdraws, ] = await Promise.all([
+  const [deposits, withdraws, transfers] = await Promise.all([
     Deposit.find({userId}).sort({ createdAt: -1 }),
     Withdraw.find({userId}).sort({ createdAt: -1 }),
+    Transfer.find({userId}).sort({ createdAt: -1 }),
   ]);
 
   const payments = [
     ...deposits.map(d => ({ type: "deposit", ...d.toObject() })),
     ...withdraws.map(w => ({ type: "withdraw", ...w.toObject() })),
+    ...transfers.map(t => ({ type: "transfer", ...t.toObject() })),
   ].sort((a, b) => b.createdAt - a.createdAt);
 
   return payments;

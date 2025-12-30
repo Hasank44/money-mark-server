@@ -31,6 +31,10 @@ const withdrawSchema = new Schema(
       type: String,
       trim: true,
     },
+    walletName: {
+      type: String,
+      trim: true
+    },
     status: {
       type: String,
       default: "Pending",

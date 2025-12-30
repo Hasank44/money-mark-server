@@ -4,15 +4,20 @@ const transferSchema = new Schema({
     userId: {
         type: String,
     },
-    receiver: {
+    senderWallet: {
+        type: String,
+        trim: true
+    },
+    receivingWallet: {
         type: String,
         trim: true
     },
     amount: {
         type: Number
     },
-    note: {
-        type: String
+    status: {
+        type: String,
+        default: 'Pending'
     }
 }, {
     timestamps: true

@@ -80,90 +80,116 @@ export const userWithdrawHistory = async (req, res) => {
 
 export const userWithdraw = async (req, res) => {
   try {
-    const { _id } = req.user;
-    const { amount, method, payWith, paymentAddress } = req.body;
-
+    const userId = req.user?._id;
+    const { amount, method, payWith, paymentAddress, walletName } = req.body;
     const validate = withdrawValidator({
       amount,
       method,
       payWith,
       paymentAddress,
+      walletName,
     });
     if (!validate.isValid) {
       return res.status(400).json(validate.error);
     }
-    if (!mongoose.Types.ObjectId.isValid(_id)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
-        message: "Invalid User",
+        message: "Invalid user",
       });
     }
     const amountNum = Number(amount);
-    if (isNaN(amountNum) || amountNum <= 0) {
+    if (!amountNum || amountNum <= 0) {
       return res.status(400).json({
-        message: "Amount must be a valid number",
+        message: "Invalid withdraw amount",
       });
     }
-    const user = await User.findById(_id);
-    if (!user) {
+    const user = await User.findById(userId);
+    if (!user)
       return res.status(404).json({
         message: "User not found",
       });
-    }
-    if (user.isLoggedIn === false) {
-      return res.status(404).json({
+    if (!user.isLoggedIn)
+      return res.status(401).json({
         message: "Please login first",
       });
-    }
-    if (user.isVerified === false) {
-      return res.status(404).json({
-        message: "Please email verify first",
+
+    if (!user.isVerified)
+      return res.status(403).json({
+        message: "Please verify email first",
       });
-    }
-    if (user.status === "Inactive") {
-      return res.status(404).json({
-        message: "Your account not active",
+
+    if (user.status !== "Active")
+      return res.status(403).json({
+        message: "Your Account is not Active",
       });
-    }
-    if (user.balance < 100) {
+
+    if (
+      !Object.prototype.hasOwnProperty.call(user.toObject(), walletName) ||
+      typeof user[walletName] !== "number"
+    ) {
       return res.status(400).json({
-        message: "Insufficient balance",
+        message: "Invalid wallet name",
+      });
+    }
+    const minimumWithdrawDoc = await Price.findOne({
+      priceName: "MinimumWithdraw",
+    });
+
+    if (!minimumWithdrawDoc) {
+      return res.status(500).json({
+        message: "Minimum withdraw amount not configured",
+      });
+    }
+    const minimumWithdrawAmount = Number(minimumWithdrawDoc.amount);
+
+    const walletBalance = Number(user[walletName]);
+    if (amountNum < minimumWithdrawAmount) {
+      return res.status(400).json({
+        message: `Minimum withdraw amount is ${minimumWithdrawAmount}`,
+      });
+    }
+    if (walletBalance < amountNum) {
+      return res.status(400).json({
+        message: "Insufficient wallet balance",
       });
     }
     if (user.balance < amountNum) {
       return res.status(400).json({
-        message: "Insufficient balance",
+        message: "Insufficient total balance",
       });
     }
     const withdrawFeeDoc = await Price.findOne({ priceName: "withdrawFee" });
     if (!withdrawFeeDoc) {
-      return res.status(400).json({
-        message: "Something wrong"
+      return res.status(500).json({
+        message: "Withdraw fee not configured",
       });
     }
     const feePercent = Number(withdrawFeeDoc.amount);
     const feeAmount = (amountNum * feePercent) / 100;
+    const payableAmount = amountNum - feeAmount;
 
-    const withdrawAble = amountNum - feeAmount;
-    const newWithdraw = new Withdraw({
+    const withdraw = await Withdraw.create({
       userId: user._id,
       amount: amountNum,
-      id: user.referCode,
-      pay: withdrawAble,
+      pay: payableAmount,
       method,
       payWith,
       paymentAddress,
+      walletName,
     });
-    await newWithdraw.save();
+    user[walletName] -= amountNum;
+    user.balance -= amountNum;
+    user.totalWithdraw += amountNum;
 
-    user.balance -= newWithdraw.amount;
-    user.withdraws.unshift(newWithdraw._id);
+    user.withdraws.unshift(withdraw._id);
     await user.save();
+
     return res.status(201).json({
-      message: "Request Submitted",
+      message: "Withdraw request submitted successfully",
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Server Error Occurred",
+      message: "Server error occurred",
     });
   }
 };
@@ -172,7 +198,6 @@ export const approveWithdrawByAdmin = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-
     if (!status) {
       return res.status(400).json({
         message: "Please select status",
@@ -180,50 +205,60 @@ export const approveWithdrawByAdmin = async (req, res) => {
     }
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: "Invalid Credentials",
+        message: "Invalid withdraw id",
       });
     }
     const withdraw = await Withdraw.findById(id);
     if (!withdraw) {
-      return res.status(400).json({
-        message: "Withdraw not exist",
+      return res.status(404).json({
+        message: "Withdraw not found",
       });
     }
-    if (withdraw.isVerified === true) {
+    if (withdraw.isVerified) {
       return res.status(400).json({
-        message: "Already Submitted",
+        message: "Withdraw already processed",
       });
     }
     const user = await User.findById(withdraw.userId);
     if (!user) {
-      return res.status(400).json({
-        message: "Account not found!",
+      return res.status(404).json({
+        message: "User not found",
       });
-    };
+    }
+    const walletName = withdraw.walletName;
+    if (typeof user[walletName] !== "number") {
+      return res.status(400).json({
+        message: "Invalid wallet reference",
+      });
+    }
+
     if (status === "Processing") {
       withdraw.status = status;
       await withdraw.save();
-    };
+    }
     if (status === "Completed") {
       withdraw.status = status;
       withdraw.isVerified = true;
       await withdraw.save();
+
       user.totalWithdraw += withdraw.amount;
       await user.save();
-    };
+    }
     if (status === "Failed") {
       withdraw.status = status;
       withdraw.isVerified = true;
       await withdraw.save();
+      user[walletName] += withdraw.amount;
       user.balance += withdraw.amount;
       await user.save();
     }
     return res.status(200).json({
-      message: "Withdraw Updated",
+      message: "Withdraw updated successfully",
     });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
-      message: "Server Error Occurred",
+      message: "Server error occurred",
     });
   }
 };
