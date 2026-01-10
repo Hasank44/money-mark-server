@@ -1,14 +1,15 @@
 import express from "express";
 import {
-  createPayment,
+  paymentCreate,
+  paymentWebhook,
   paymentSuccess,
-  paymentCancel,
 } from "../controllers/paymentController.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
-router.post("/create", isAuthenticated, createPayment);
-router.post("/success/:transaction_id", paymentSuccess);
-router.get("/cancel", paymentCancel);
+router.post("/create", isAuthenticated, paymentCreate);
+router.post("/verify", paymentSuccess);
+router.post('/webhook', paymentWebhook);
+
 export default router;
