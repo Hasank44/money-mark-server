@@ -76,7 +76,6 @@ export const paymentCreate = async (req, res) => {
 export const paymentSuccess = async (req, res) => {
   try {
     const { invoiceId, valId } = req.body;
-    console.log(invoiceId, valId);
     if (!invoiceId || !valId) return res.redirect(process.env.FRONT_URL);
     const payment = await Active.findOne({ transactionId: valId });
     if (!payment) return res.redirect(process.env.FRONT_URL);
@@ -95,7 +94,6 @@ export const paymentSuccess = async (req, res) => {
         },
       }
     );
-    console.log(verifyResponse);
     const data = verifyResponse.data;
     if (data.status !== "COMPLETED") {
       payment.status = "Failed";
@@ -144,7 +142,6 @@ export const paymentSuccess = async (req, res) => {
     };
     return res.redirect(`${process.env.FRONT_URL}`);
   } catch (error) {
-    console.log(error)
     return res.redirect(
       `${process.env.FRONT_URL}`
     );
@@ -154,7 +151,7 @@ export const paymentSuccess = async (req, res) => {
 export const paymentWebhook = async (req, res) => {
   try {
     const { status, invoiceId, metadata } = req.body;
-    console.log(status, invoiceId, metadata);
+    // console.log(status, invoiceId, metadata);
     const transactionId = invoiceId || metadata?.transactionId;
     if (!transactionId) return res.sendStatus(400);
     const payment = await Active.findOne({ transactionId });
