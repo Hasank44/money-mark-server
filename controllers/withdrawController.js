@@ -170,6 +170,7 @@ export const userWithdraw = async (req, res) => {
 
     const withdraw = await Withdraw.create({
       userId: user._id,
+      id: user.referCode,
       amount: amountNum,
       pay: payableAmount,
       method,
@@ -240,7 +241,6 @@ export const approveWithdrawByAdmin = async (req, res) => {
       withdraw.status = status;
       withdraw.isVerified = true;
       await withdraw.save();
-
       user.totalWithdraw += withdraw.amount;
       await user.save();
     }

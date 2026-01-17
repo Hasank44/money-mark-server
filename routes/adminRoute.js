@@ -12,6 +12,7 @@ import { approveInstagramByAdmin, getAllInstagramSellHistory } from "../controll
 import { createCodeByAdmin, getAllHistoryByAmin } from "../controllers/giftCodeController.js";
 import { approveAccountActiveByAdmin, getAllActiveByAdmin } from "../controllers/ActiveController.js";
 import { approveTaskByAdmin, deleteTaskByAdmin, getAllTaskHistoryByAdmin, setNewTaskByAdmin, taskUpdateByAdmin, userTaskHistoryByAdmin } from "../controllers/taskAdminController.js";
+import { approveWithdrawByAdmin, getAllWithdrawByAdmin } from "../controllers/withdrawController.js";
 
 const router = Router();
 // users
@@ -65,4 +66,8 @@ router.post('/update/task/:id', isAuthenticated, roleMiddleware('admin'), taskUp
 router.delete('/delete/task/:id', isAuthenticated, roleMiddleware('admin'), deleteTaskByAdmin);
 router.get('/all/tasks/history', isAuthenticated, roleMiddleware('admin'), userTaskHistoryByAdmin);
 router.post('/task/request/success/:id', isAuthenticated, roleMiddleware('admin'), approveTaskByAdmin);
+
+// payments
+router.get('/withdraw/requests', isAuthenticated, roleMiddleware('admin'), getAllWithdrawByAdmin);
+router.post('/withdraw/success/:id', isAuthenticated, roleMiddleware('admin'), approveWithdrawByAdmin);
 export default router;

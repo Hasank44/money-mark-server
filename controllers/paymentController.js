@@ -65,7 +65,6 @@ export const paymentCreate = async (req, res) => {
       invoiceId,
     });
   } catch (err) {
-    console.log(err)
     return res.status(500).json({
       success: false,
       message: "Payment create failed",
@@ -84,6 +83,10 @@ export const paymentSuccess = async (req, res) => {
     };
     const user = await User.findById(payment.userId);
     if (!user) return res.redirect(process.env.FRONT_URL);
+    const price = await Price.findOne({ priceName: "accountActive" });
+    if (!price) {
+      return res.status(404).json({ message: "Price not found" });
+    }
     const verifyResponse = await axios.post(
       "https://api.zinipay.com/v1/payment/verify",
       { invoiceId },
@@ -101,7 +104,7 @@ export const paymentSuccess = async (req, res) => {
       await payment.save();
       return res.redirect(`${process.env.FRONT_URL}`);
     };
-    if (data.status === 'COMPLETED') {
+    if (data.status === 'COMPLETED' && price.amount === data.amount) {
       payment.status = "Completed";
       payment.isVerified = true;
       payment.amount = Number(data.amount);
@@ -139,7 +142,7 @@ export const paymentSuccess = async (req, res) => {
           };
         };
       };
-    };
+    }
     return res.redirect(`${process.env.FRONT_URL}`);
   } catch (error) {
     return res.redirect(
@@ -200,7 +203,7 @@ export const paymentWebhook = async (req, res) => {
     };
     res.sendStatus(200);
   } catch (err) {
-    console.error("Webhook Error:", err.message);
+    // console.error("Webhook Error:", err.message);
     res.sendStatus(500);
   }
 };
