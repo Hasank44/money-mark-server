@@ -198,6 +198,7 @@ export const approveInstagramByAdmin = async (req, res) => {
       isExist.isVerified = true;
       await isExist.save();
       user.balance += isExist.amount;
+      user.instagramEarn += isExist.amount;
       await user.save();
     }
     if (status === "Failed") {

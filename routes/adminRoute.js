@@ -13,6 +13,7 @@ import { createCodeByAdmin, getAllHistoryByAmin } from "../controllers/giftCodeC
 import { approveAccountActiveByAdmin, getAllActiveByAdmin } from "../controllers/ActiveController.js";
 import { approveTaskByAdmin, deleteTaskByAdmin, getAllTaskHistoryByAdmin, setNewTaskByAdmin, taskUpdateByAdmin, userTaskHistoryByAdmin } from "../controllers/taskAdminController.js";
 import { approveWithdrawByAdmin, getAllWithdrawByAdmin } from "../controllers/withdrawController.js";
+import { userWalletUpdateByAdmin } from "../controllers/userController.js";
 
 const router = Router();
 // users
@@ -21,6 +22,7 @@ router.get('/user/:id', isAuthenticated, roleMiddleware('admin'), userGetOneByAd
 router.post('/user/update/:id', isAuthenticated, roleMiddleware('admin'), userUpdateByAdmin);
 router.post('/change/password/:id', isAuthenticated, roleMiddleware('admin'), userPasswordChangeByAdmin);
 router.post('/user/account/active/:id', isAuthenticated, roleMiddleware('admin'), approveAccountActiveByAdmin);
+router.post('/user/wallet/update/:id', isAuthenticated, roleMiddleware('admin'), userWalletUpdateByAdmin);
 
 // admins
 router.post('/login', adminLogin);

@@ -177,6 +177,7 @@ export const userGetGiftCode = async (req, res) => {
         giftCode.paidAmount += addAmount
         await giftCode.save();
         user.balance += addAmount;
+        user.giftEarn += addAmount;
         user.giftCode.push(giftCode._id);
         await user.save();
         return res.status(200).json({

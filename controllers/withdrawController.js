@@ -180,7 +180,6 @@ export const userWithdraw = async (req, res) => {
     });
     user[walletName] -= amountNum;
     user.balance -= amountNum;
-    user.totalWithdraw += amountNum;
 
     user.withdraws.unshift(withdraw._id);
     await user.save();
@@ -232,7 +231,6 @@ export const approveWithdrawByAdmin = async (req, res) => {
         message: "Invalid wallet reference",
       });
     }
-
     if (status === "Processing") {
       withdraw.status = status;
       await withdraw.save();
@@ -256,7 +254,6 @@ export const approveWithdrawByAdmin = async (req, res) => {
       message: "Withdraw updated successfully",
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       message: "Server error occurred",
     });

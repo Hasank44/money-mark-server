@@ -667,3 +667,80 @@ export const userProfileUpdate = async (req, res) => {
     });
   }
 };
+
+export const userWalletUpdateByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const toNumber = (v) => {
+      const n = Number(v);
+      return isNaN(n) ? 0 : n;
+    };
+    const {
+      balance,
+      gmailEarn,
+      facebookEarn,
+      telegramEarn,
+      instagramEarn,
+      referEarn,
+      giftEarn,
+      editEarn,
+      marketingEarn,
+      writingEarn,
+      designEarn,
+      microJobEarn,
+      dataEntryEarn,
+      googleJobEarn,
+      generalEarn,
+      proEarn,
+      freeEarn,
+      salaryEarn,
+    } = req.body;
+
+    const data = {
+      balance: toNumber(balance),
+      gmailEarn: toNumber(gmailEarn),
+      facebookEarn: toNumber(facebookEarn),
+      telegramEarn: toNumber(telegramEarn),
+      instagramEarn: toNumber(instagramEarn),
+      referEarn: toNumber(referEarn),
+      giftEarn: toNumber(giftEarn),
+      editEarn: toNumber(editEarn),
+      marketingEarn: toNumber(marketingEarn),
+      writingEarn: toNumber(writingEarn),
+      designEarn: toNumber(designEarn),
+      microJobEarn: toNumber(microJobEarn),
+      dataEntryEarn: toNumber(dataEntryEarn),
+      googleJobEarn: toNumber(googleJobEarn),
+      generalEarn: toNumber(generalEarn),
+      proEarn: toNumber(proEarn),
+      freeEarn: toNumber(freeEarn),
+      salaryEarn: toNumber(salaryEarn),
+    };
+    const hasNegative = Object.values(data).some(v => v < 0);
+    if (hasNegative) {
+      return res.status(400).json({
+        message: "Earnings cannot be negative",
+      });
+    };
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, runValidators: true }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Wallet updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error occurred",
+    });
+  }
+};

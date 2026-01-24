@@ -199,6 +199,7 @@ export const approveGmailByAdmin = async (req, res) => {
       isExist.isVerified = true;
       await isExist.save();
       user.balance += isExist.amount;
+      user.gmailEarn += isExist.amount;
       await user.save();
     };
     if (status === "Failed") {
