@@ -10,6 +10,7 @@ import depositRoute from './depositRoute.js';
 import paymentRoute from './paymentRoute.js';
 import tasksRoute from './taskJobRoute.js';
 import manageRoute from './manageRoute.js';
+import mobileRechargeRoute from './mobileRechargeRoute.js';
 
 const routes = [
     { path: '/api/v2/admin', handler: adminRoute },
@@ -21,8 +22,9 @@ const routes = [
     { path: '/api/v1/user', handler: giftCodeRoute },
     { path: '/api/v1/user', handler: withdrawRoute },
     { path: '/api/v1/user', handler: depositRoute },
-    { path: '/api/v3/payment', handler: paymentRoute },
     { path: '/api/v1/user', handler: tasksRoute },
+    { path: '/api/v1/user', handler: mobileRechargeRoute },
+    { path: '/api/v3/payment', handler: paymentRoute },
     { path: '/api/v1/manage', handler: manageRoute },
 ];
 

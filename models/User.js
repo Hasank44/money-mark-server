@@ -191,6 +191,12 @@ const userSchema = new Schema(
                 ref: "Withdraw",
             },
         ],
+        recharges: [
+            {
+                type: String,
+                ref: "MobileRecharge",
+            },
+        ],
         gmail: [
             {
                 type: String,
