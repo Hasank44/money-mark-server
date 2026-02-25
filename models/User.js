@@ -58,6 +58,14 @@ const userSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isPartner: {
+            type: Boolean,
+            default: false
+        },
+        salary: {
+            type: Number,
+            default: 0
+        },
         totalDeposit: {
             type: Number,
             default: 0,
