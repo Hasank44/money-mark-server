@@ -16,6 +16,7 @@ import { approveWithdrawByAdmin, getAllWithdrawByAdmin } from "../controllers/wi
 import { userWalletUpdateByAdmin } from "../controllers/userController.js";
 import { approveRechargeByAdmin, getMobileRechargeByAdmin } from "../controllers/mobileRechargeController.js";
 import { approvePartnerTaskByAdmin, getPartnerTasksByAdmin } from "../controllers/partnerTaskController.js";
+import { getAllPartnerByAdmin } from "../controllers/partnerController.js";
 
 const router = Router();
 // users
@@ -80,6 +81,7 @@ router.get('/mobile-recharge/history', isAuthenticated, roleMiddleware('admin'),
 router.post('/mobile-recharge/success/:id', isAuthenticated, roleMiddleware('admin'), approveRechargeByAdmin);
 
 // partnerTasks
+router.get('/partners', isAuthenticated, roleMiddleware('admin'), getAllPartnerByAdmin);
 router.get('/partner/tasks', isAuthenticated, roleMiddleware('admin'), getPartnerTasksByAdmin);
 router.post('/approve/partner/task/:taskId', isAuthenticated, roleMiddleware('admin'), approvePartnerTaskByAdmin);
 export default router;
