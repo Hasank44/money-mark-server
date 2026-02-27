@@ -17,7 +17,7 @@ export const securityHeaders = helmet({
 
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 200,
   message: "Too many requests. try-again!",
 });
 export const compressionSecurity = compression({ level: 6 });
